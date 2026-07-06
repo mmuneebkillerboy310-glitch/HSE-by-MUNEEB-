@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSE Global Intelligence — Gulf & Australia</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#08090d;--s1:#0e1118;--s2:#141720;--s3:#1c2130;
+  --b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);
+  --tx:#e9ecf4;--mu:#52596e;--mu2:#333a4d;
+  --red:#f03e3e;--ora:#f76707;--yel:#f59f00;
+  --grn:#2f9e44;--blu:#1971c2;--cyn:#0c8599;
+  --red2:#ff6b6b;--ora2:#ff922b;--yel2:#fcc419;
+  --grn2:#51cf66;--blu2:#4dabf7;--cyn2:#3bc9db;
+  --gulf:#f59f00;--aus:#2f9e44;--glo:#1971c2;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:'Outfit',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0e1118}::-webkit-scrollbar-thumb{background:#2a3040;border-radius:4px}
+
+/* TOPBAR */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(8,9,13,0.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--b1);
+  padding:0 28px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tb-left{display:flex;align-items:center;gap:20px}
+.tb-logo{display:flex;align-items:center;gap:10px}
+.tb-icon{
+  width:30px;height:30px;border-radius:7px;
+  background:linear-gradient(135deg,var(--red),var(--ora));
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+}
+.tb-title{font-family:'Outfit',sans-serif;font-weight:700;font-size:0.9rem}
+.tb-divider{width:1px;height:20px;background:var(--b2)}
+.tb-sub{font-size:0.72rem;color:var(--mu)}
+.tb-right{display:flex;align-items:center;gap:10px}
+.live-pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(47,158,68,0.1);border:1px solid rgba(47,158,68,0.25);
+  border-radius:100px;padding:5px 12px;font-size:0.7rem;font-weight:600;color:var(--grn2);
+}
+.blink{width:6px;height:6px;background:var(--grn2);border-radius:50%;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.clk{font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--mu)}
+.rbtn{
+  padding:6px 14px;border-radius:7px;border:1px solid var(--b2);
+  background:var(--s2);color:var(--tx);
+  font-family:'Outfit',sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all .15s;
+}
+.rbtn:hover{background:var(--s3);border-color:var(--b2)}
+.rbtn.alert{background:rgba(240,62,62,0.1);border-color:rgba(240,62,62,0.3);color:var(--red2)}
+
+/* REGION TABS */
+.region-tabs{
+  display:flex;gap:0;padding:20px 28px 0;border-bottom:1px solid var(--b1);
+}
+.rtab{
+  padding:10px 22px;font-size:0.8rem;font-weight:600;cursor:pointer;
+  border-bottom:2px solid transparent;color:var(--mu);transition:all .2s;
+}
+.rtab.active{color:var(--tx);border-bottom-color:var(--red2)}
+.rtab:hover:not(.active){color:var(--tx)}
+.rtab .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+
+/* CONTENT */
+.page{display:none;padding:22px 28px 40px}
+.page.active{display:block}
+
+/* ALERT STRIP */
+.alert-strip{
+  background:linear-gradient(90deg,rgba(240,62,62,0.1),rgba(247,103,7,0.06));
+  border:1px solid rgba(240,62,62,0.2);border-left:3px solid var(--red);
+  border-radius:10px;padding:12px 18px;
+  display:flex;align-items:center;gap:14px;margin-bottom:20px;
+  animation:pulse-l 3s infinite;
+}
+@keyframes pulse-l{0%,100%{border-left-color:var(--red)}50%{border-left-color:var(--ora)}}
+.as-icon{font-size:1.2rem}
+.as-main{font-size:0.8rem;font-weight:700;color:var(--red2)}
+.as-sub{font-size:0.72rem;color:var(--mu);margin-top:2px}
+.as-badge{
+  margin-left:auto;padding:3px 10px;border-radius:5px;white-space:nowrap;
+  background:rgba(240,62,62,0.15);color:var(--red2);font-size:0.62rem;font-weight:700;text-transform:uppercase;
+}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.kpi{
+  background:var(--s1);border:1px solid var(--b1);border-radius:12px;
+  padding:16px 18px;position:relative;overflow:hidden;transition:border-color .2s;
+}
+.kpi:hover{border-color:var(--b2)}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;border-radius:0 0 12px 12px}
+.kpi.r::after{background:var(--red2)}.kpi.o::after{background:var(--ora2)}.kpi.y::after{background:var(--yel2)}
+.kpi.g::after{background:var(--grn2)}.kpi.b::after{background:var(--blu2)}.kpi.c::after{background:var(--cyn2)}
+.kpi-lbl{font-size:0.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);margin-bottom:7px;font-weight:600}
+.kpi-val{font-size:1.9rem;font-weight:800;line-height:1;margin-bottom:3px}
+.kpi-val.r{color:var(--red2)}.kpi-val.o{color:var(--ora2)}.kpi-val.y{color:var(--yel2)}
+.kpi-val.g{color:var(--grn2)}.kpi-val.b{color:var(--blu2)}.kpi-val.c{color:var(--cyn2)}
+.kpi-sub{font-size:0.65rem;color:var(--mu)}
+.kpi-delta{position:absolute;top:12px;right:12px;font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:4px}
+.kpi-delta.bad{background:rgba(240,62,62,0.12);color:var(--red2)}
+.kpi-delta.good{background:rgba(47,158,68,0.1);color:var(--grn2)}
+.kpi-delta.neu{background:rgba(245,159,0,0.1);color:var(--yel2)}
+
+/* GRID LAYOUTS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+
+/* PANEL */
+.panel{background:var(--s1);border:1px solid var(--b1);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.ph{padding:14px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+.ph h3{font-size:0.8rem;font-weight:700;display:flex;align-items:center;gap:7px}
+.ph .ps{font-size:0.65rem;color:var(--mu)}
+.pb{padding:18px}
+.src{font-size:0.58rem;color:var(--mu2);font-family:'Space Mono',monospace;padding:6px 18px 14px}
+
+/* CHART WRAP */
+.chart-wrap{position:relative;padding:16px 18px}
+.chart-wrap canvas{max-height:220px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:0.58rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);font-weight:700;padding:9px 14px;text-align:left;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--b1)}
+.tbl td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.76rem;vertical-align:middle}
+.tbl tr:last-child td{border:none}
+.tbl tr:hover td{background:rgba(255,255,255,0.02)}
+.sev{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:0.6rem;font-weight:700;text-transform:uppercase}
+.sev.cr{background:rgba(240,62,62,0.13);color:var(--red2)}
+.sev.hi{background:rgba(247,103,7,0.13);color:var(--ora2)}
+.sev.me{background:rgba(245,159,0,0.1);color:var(--yel2)}
+.sev.lo{background:rgba(47,158,68,0.1);color:var(--grn2)}
+.sev-d{width:5px;height:5px;border-radius:50%;background:currentColor}
+.tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:0.6rem;background:rgba(255,255,255,0.05);color:var(--mu);border:1px solid var(--b1)}
+.mono{font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--mu)}
+
+/* CAUSE BARS */
+.cause-list{display:flex;flex-direction:column;gap:9px;padding:14px 18px}
+.cr-row{display:flex;align-items:center;gap:10px}
+.cr-name{font-size:0.73rem;min-width:170px}
+.cr-track{flex:1;height:7px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden}
+.cr-fill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+.cr-pct{font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--mu);min-width:34px;text-align:right}
+
+/* RISK ZONES */
+.rz-list{display:flex;flex-direction:column;gap:8px;padding:14px 18px}
+.rz{display:flex;align-items:center;gap:12px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:10px 14px}
+.rz-icon{font-size:1.1rem;min-width:24px;text-align:center}
+.rz-info{flex:1}.rz-name{font-size:0.78rem;font-weight:600}.rz-desc{font-size:0.64rem;color:var(--mu);margin-top:2px}
+.rl{font-size:0.6rem;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;white-space:nowrap}
+.rl.cr{background:rgba(240,62,62,0.13);color:var(--red2)}
+.rl.hi{background:rgba(247,103,7,0.13);color:var(--ora2)}
+.rl.me{background:rgba(245,159,0,0.1);color:var(--yel2)}
+
+/* TIMELINE */
+.tl{display:flex;flex-direction:column}
+.tl-item{display:grid;grid-template-columns:80px 20px 1fr;gap:0 12px}
+.tl-yr{font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--mu);text-align:right;padding-top:15px}
+.tl-spine{display:flex;flex-direction:column;align-items:center}
+.tl-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--s1);margin-top:17px;z-index:1;flex-shrink:0}
+.tl-line{flex:1;width:1px;background:var(--b2)}
+.tl-item:last-child .tl-line{display:none}
+.tl-body{padding:10px 0 18px}
+.tl-name{font-size:0.8rem;font-weight:700;margin-bottom:3px}
+.tl-loc{font-size:0.65rem;color:var(--mu);margin-bottom:5px;font-family:'Space Mono',monospace}
+.tl-desc{font-size:0.72rem;color:var(--mu);line-height:1.55}
+.tl-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.tl-tag{padding:2px 7px;border-radius:3px;font-size:0.58rem;font-weight:600;background:rgba(255,255,255,0.05);color:var(--mu);border:1px solid var(--b1)}
+
+/* COMPLIANCE RINGS */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 18px}
+.comp-card{background:var(--s2);border:1px solid var(--b1);border-radius:9px;padding:13px}
+.comp-lbl{font-size:0.65rem;color:var(--mu);margin-bottom:9px;font-weight:600}
+.comp-row{display:flex;align-items:center;gap:12px}
+.ring-wrap{position:relative;width:52px;height:52px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:0.65rem;font-weight:700}
+.comp-stat{font-size:0.7rem;font-weight:700;margin-bottom:2px}
+.comp-note{font-size:0.62rem;color:var(--mu);line-height:1.4}
+
+/* VIOLATION CARDS */
+.viol-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:14px 18px}
+.viol{background:var(--s2);border-radius:10px;padding:14px;border:1px solid var(--b1)}
+.viol-icon{font-size:1.3rem;margin-bottom:7px}
+.viol-title{font-size:0.78rem;font-weight:700;margin-bottom:5px}
+.viol-desc{font-size:0.68rem;color:var(--mu);line-height:1.5}
+
+/* RISK MATRIX */
+.rm-wrap{padding:14px 18px}
+.rm-label-x{display:flex;justify-content:space-between;font-size:0.58rem;color:var(--mu);margin-bottom:4px;padding:0 2px}
+.rm-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.rm-cell{
+  aspect-ratio:1;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.55rem;font-weight:700;text-align:center;cursor:default;
+  transition:transform .15s;line-height:1.2;padding:2px;
+}
+.rm-cell:hover{transform:scale(1.1);z-index:2;position:relative}
+.rm-cell.cr{background:rgba(240,62,62,0.8);color:#fff}
+.rm-cell.hi{background:rgba(247,103,7,0.65);color:#fff}
+.rm-cell.me{background:rgba(245,159,0,0.55);color:#1a1a00}
+.rm-cell.lo{background:rgba(47,158,68,0.45);color:#001a00}
+.rm-cell.vl{background:rgba(47,158,68,0.2);color:var(--grn2)}
+.rm-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.rm-leg-item{display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--mu)}
+.rm-leg-dot{width:10px;height:10px;border-radius:3px}
+
+/* SECTION TITLE */
+.stitle{display:flex;align-items:center;gap:10px;margin:20px 0 12px}
+.stitle h2{font-size:0.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--mu);font-weight:700;white-space:nowrap}
+.stitle .line{flex:1;height:1px;background:var(--b1)}
+
+/* COMPARE TABLE */
+.cmp-table{width:100%;border-collapse:collapse}
+.cmp-table th{font-size:0.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);font-weight:700;padding:9px 14px;border-bottom:1px solid var(--b1)}
+.cmp-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.76rem}
+.cmp-table tr:last-child td{border:none}
+.cmp-table tr:hover td{background:rgba(255,255,255,0.02)}
+.gulf-col{color:var(--yel2);font-weight:600}
+.aus-col{color:var(--grn2);font-weight:600}
+
+/* FOOTER */
+.footer{text-align:center;padding:20px;font-size:0.65rem;color:var(--mu2);border-top:1px solid var(--b1);margin-top:10px}
+.footer a{color:var(--mu);text-decoration:none}
+
+/* ANIMATE */
+.panel,.kpi,.alert-strip{animation:fadeUp .4s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-logo">
+      <div class="tb-icon">⚠</div>
+      <div class="tb-title">HSE Global Intelligence</div>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="tb-sub">Oil & Gas · Construction · Gulf Region & Australia</div>
+  </div>
+  <div class="tb-right">
+    <div class="live-pill"><span class="blink"></span>Live</div>
+    <div class="clk" id="clk">--:--:--</div>
+    <button class="rbtn alert">🚨 Report Incident</button>
+    <button class="rbtn">⬇ Export</button>
+  </div>
+</div>
+
+<!-- REGION TABS -->
+<div class="region-tabs">
+  <div class="rtab active" onclick="switchTab('global',this)"><span class="dot" style="background:#4dabf7"></span>Global Overview</div>
+  <div class="rtab" onclick="switchTab('gulf',this)"><span class="dot" style="background:#fcc419"></span>Gulf Region 🇸🇦🇦🇪🇶🇦</div>
+  <div class="rtab" onclick="switchTab('aus',this)"><span class="dot" style="background:#51cf66"></span>Australia 🇦🇺</div>
+  <div class="rtab" onclick="switchTab('compare',this)"><span class="dot" style="background:#f03e3e"></span>Comparison</div>
+</div>
+
+<!-- ══════════ GLOBAL PAGE ══════════ -->
+<div class="page active" id="page-global">
+
+  <div class="alert-strip">
+    <div class="as-icon">🚨</div>
+    <div>
+      <div class="as-main">CRITICAL — 2024: 32 Global Fatalities · Gulf contractors most at risk · Australia construction deaths +67%</div>
+      <div class="as-sub">Sources: IOGP 2024 · Safe Work Australia 2024 · ILO GCC Report · NOPSEMA Regulations 2024</div>
+    </div>
+    <div class="as-badge">Action Required</div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi r"><div class="kpi-delta bad">▲ +5 vs 2023</div><div class="kpi-lbl">Global Fatalities 2024</div><div class="kpi-val r">32</div><div class="kpi-sub">In 21 incidents (IOGP)</div></div>
+    <div class="kpi o"><div class="kpi-delta good">▼ −6%</div><div class="kpi-lbl">Fatal Accident Rate</div><div class="kpi-val o">0.77</div><div class="kpi-sub">Per 100M work hours</div></div>
+    <div class="kpi y"><div class="kpi-delta bad">▲ +5%</div><div class="kpi-lbl">Australia Fatalities 2023</div><div class="kpi-val y">200</div><div class="kpi-sub">Safe Work Australia</div></div>
+    <div class="kpi r"><div class="kpi-delta bad">▲ Est.</div><div class="kpi-lbl">Gulf Migrant Deaths/yr</div><div class="kpi-val r">10K</div><div class="kpi-sub">ILO / Vital Signs 2022</div></div>
+    <div class="kpi g"><div class="kpi-delta good">▼ −90%</div><div class="kpi-lbl">FAR Improvement (1985→)</div><div class="kpi-val g">90%</div><div class="kpi-sub">3-decade IOGP trend</div></div>
+    <div class="kpi b"><div class="kpi-delta neu">= Steady</div><div class="kpi-lbl">Aus Construction Deaths</div><div class="kpi-val b">45</div><div class="kpi-sub">23% of all AU fatalities</div></div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Global Fatality Trend 2019–2024</h2><div class="line"></div></div>
+
+  <div class="g2">
+    <div class="panel">
+      <div class="ph"><h3>📉 Annual Fatalities — IOGP Members</h3><span class="ps">2019–2024 Official Data</span></div>
+      <div class="chart-wrap"><canvas id="chartGlobalFat"></canvas></div>
+      <div class="src">Source: IOGP Safety Performance Indicators 2019–2024 Annual Reports</div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h3>🔍 2024 Fatality Causes</h3><span class="ps">By incident category %</span></div>
+      <div class="chart-wrap"><canvas id="chartCauses"></canvas></div>
+      <div class="src">Source: IOGP 2024 Safety Performance Indicators</div>
+    </div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Top Incident Categories & Risk Zones</h2><div class="line"></div></div>
+
+  <div class="g2">
+    <div class="panel">
+      <div class="ph"><h3>⚠ Active Risk Zones — Global Oil & Gas</h3><span class="ps">Priority action needed</span></div>
+      <div class="rz-list">
+        <div class="rz"><div class="rz-icon">🔩</div><div class="rz-info"><div class="rz-name">Drilling & Well Operations</div><div class="rz-desc">34% of 2024 fatalities (11 deaths) — highest single activity</div></div><div class="rl cr">CRITICAL</div></div>
+        <div class="rz"><div class="rz-icon">🔥</div><div class="rz-info"><div class="rz-name">Fire & Explosion</div><div class="rz-desc">41% of 2024 deaths — 13 fatalities across 5 separate incidents</div></div><div class="rl cr">CRITICAL</div></div>
+        <div class="rz"><div class="rz-icon">🧑‍🔧</div><div class="rz-info"><div class="rz-name">Contractor Safety Gap</div><div class="rz-desc">81% of all fatalities = contractors, not direct employees</div></div><div class="rl cr">CRITICAL</div></div>
+        <div class="rz"><div class="rz-icon">🚛</div><div class="rz-info"><div class="rz-name">Land Transport</div><div class="rz-desc">4 deaths in 2024 near worksites — trucks & road accidents</div></div><div class="rl hi">HIGH</div></div>
+        <div class="rz"><div class="rz-icon">🏗</div><div class="rz-info"><div class="rz-name">Lifting & Crane Operations</div><div class="rz-desc">2 fatalities — dropped objects, rigging & sling failures</div></div><div class="rl hi">HIGH</div></div>
+        <div class="rz"><div class="rz-icon">🛠</div><div class="rz-info"><div class="rz-name">Maintenance PTW Failures</div><div class="rz-desc">Permit-to-Work bypassed — 3 deaths in maintenance activities</div></div><div class="rl me">MEDIUM</div></div>
+      </div>
+      <div class="src">Source: IOGP 2024 Report · SPE JPT Analysis July 2025</div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h3>🎯 5×5 Risk Matrix — Oil & Gas</h3><span class="ps">Likelihood vs Consequence</span></div>
+      <div class="rm-wrap">
+        <div style="font-size:0.6rem;color:var(--mu);margin-bottom:6px;text-align:center">← Likelihood →</div>
+        <div class="rm-label-x"><span>Rare</span><span>Unlikely</span><span>Possible</span><span>Likely</span><span>Almost Certain</span></div>
+        <div class="rm-grid" id="rmGrid"></div>
+        <div class="rm-legend">
+          <div class="rm-leg-item"><div class="rm-leg-dot" style="background:rgba(240,62,62,0.8)"></div>Critical</div>
+          <div class="rm-leg-item"><div class="rm-leg-dot" style="background:rgba(247,103,7,0.65)"></div>High</div>
+          <div class="rm-leg-item"><div class="rm-leg-dot" style="background:rgba(245,159,0,0.55)"></div>Medium</div>
+          <div class="rm-leg-item"><div class="rm-leg-dot" style="background:rgba(47,158,68,0.45)"></div>Low</div>
+          <div class="rm-leg-item"><div class="rm-leg-dot" style="background:rgba(47,158,68,0.2)"></div>Very Low</div>
+        </div>
+      </div>
+      <div class="src">Standard 5×5 Risk Matrix — ISO 31000 / IOGP Framework</div>
+    </div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Major Historical Incidents — Global</h2><div class="line"></div></div>
+  <div class="panel">
+    <div class="ph"><h3>📅 Landmark Incidents Timeline (1977–2024)</h3><span class="ps">Verified investigation reports</span></div>
+    <div class="pb">
+      <div class="tl" id="tl-global"></div>
+    </div>
+    <div class="src">Sources: IOGP · Britannica · CSB · BSEE · HSE UK · Arnold & Itkin LLP · UNDRR</div>
+  </div>
+</div>
+
+<!-- ══════════ GULF PAGE ══════════ -->
+<div class="page" id="page-gulf">
+
+  <div class="alert-strip" style="border-left-color:var(--yel)">
+    <div class="as-icon">⚠️</div>
+    <div>
+      <div class="as-main" style="color:var(--yel2)">GULF REGION — Up to 10,000 migrant worker deaths/year · UAE fatality rate 6.8/100K workers · Qatar FIFA World Cup: 1.5M workers exposed</div>
+      <div class="as-sub">Sources: ILO · Vital Signs Partnership 2022 · WHO EMRO · HRW 2025 · SmartQHSE 2026</div>
+    </div>
+    <div class="as-badge" style="background:rgba(245,159,0,0.15);color:var(--yel2)">Migrant Crisis</div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi r"><div class="kpi-delta bad">Estimated</div><div class="kpi-lbl">Gulf Migrant Deaths/yr</div><div class="kpi-val r">~10K</div><div class="kpi-sub">South/SE Asia workers (ILO)</div></div>
+    <div class="kpi o"><div class="kpi-delta bad">2008–2011</div><div class="kpi-lbl">UAE Fatality Rate</div><div class="kpi-val o">6.8</div><div class="kpi-sub">Per 100K workers</div></div>
+    <div class="kpi y"><div class="kpi-delta bad">Highest GCC</div><div class="kpi-lbl">Bahrain Rate</div><div class="kpi-val y">7.5</div><div class="kpi-sub">Per 100K workers</div></div>
+    <div class="kpi r"><div class="kpi-delta bad">Underreported</div><div class="kpi-lbl">Saudi Contractor Injuries</div><div class="kpi-val r">14×</div><div class="kpi-sub">vs local worker rate</div></div>
+    <div class="kpi g"><div class="kpi-delta good">+Vision 2030</div><div class="kpi-lbl">Saudi HSE Coverage</div><div class="kpi-val g">95%</div><div class="kpi-sub">Basic healthcare covered</div></div>
+    <div class="kpi b"><div class="kpi-delta neu">2022 Update</div><div class="kpi-lbl">UAE Cabinet Resolution 33</div><div class="kpi-val b">2022</div><div class="kpi-sub">New OSH regulations</div></div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Gulf Fatality Rate by Country & Incident Causes</h2><div class="line"></div></div>
+
+  <div class="g2">
+    <div class="panel">
+      <div class="ph"><h3>📊 Worker Fatality Rate — GCC Countries</h3><span class="ps">Deaths per 100,000 workers</span></div>
+      <div class="chart-wrap"><canvas id="chartGulfCountry"></canvas></div>
+      <div class="src">Source: Tom Loney UAE University / WHO / ILO data (2008–2011). Improvements noted post-2020 with Vision 2030.</div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h3>🔍 Gulf Incident Causes</h3><span class="ps">Construction & Oil/Gas sector</span></div>
+      <div class="chart-wrap"><canvas id="chartGulfCauses"></canvas></div>
+      <div class="src">Source: WHO EMRO · HRW 2025 · Saudi GASTAT 2024 · ILO GCC Report</div>
+    </div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Gulf Risk Zones & Major Incidents</h2><div class="line"></div></div>
+
+  <div class="g2">
+    <div class="panel">
+      <div class="ph"><h3>⚠ Gulf-Specific Risk Zones</h3><span class="ps">Oil Gas + Construction</span></div>
+      <div class="rz-list">
+        <div class="rz"><div class="rz-icon">☀️</div><div class="rz-info"><div class="rz-name">Extreme Heat Exposure</div><div class="rz-desc">Summer temps 45°C+ on worksites. Outdoor work ban midday enforced but widely violated</div></div><div class="rl cr">CRITICAL</div></div>
+        <div class="rz"><div class="rz-icon">🧑‍🌾</div><div class="rz-info"><div class="rz-name">Migrant Worker Exploitation</div><div class="rz-desc">42% of severe injuries in construction are migrant workers. Language barriers, no safety training</div></div><div class="rl cr">CRITICAL</div></div>
+        <div class="rz"><div class="rz-icon">🏗</div><div class="rz-info"><div class="rz-name">Falls from Heights</div><div class="rz-desc">No. 1 cause of construction deaths across Gulf. HRW: electrocution, decapitation, falling from scaffolding</div></div><div class="rl cr">CRITICAL</div></div>
+        <div class="rz"><div class="rz-icon">💣</div><div class="rz-info"><div class="rz-name">Drone / Security Threats</div><div class="rz-desc">Aramco Abqaiq (2019), Abu Dhabi (2022), Ras Tanura (2026) — new HSE threat category</div></div><div class="rl hi">HIGH</div></div>
+        <div class="rz"><div class="rz-icon">🔥</div><div class="rz-info"><div class="rz-name">Refinery Fire & Explosions</div><div class="rz-desc">Qatar Ras Laffan LNG (2026), Jeddah Aramco (2022) — LNG infrastructure highly vulnerable</div></div><div class="rl hi">HIGH</div></div>
+        <div class="rz"><div class="rz-icon">📋</div><div class="rz-info"><div class="rz-name">Death Under-Reporting</div><div class="rz-desc">HRW: many migrant deaths classified "natural causes" — not investigated or compensated</div></div><div class="rl hi">HIGH</div></div>
+      </div>
+      <div class="src">Sources: HRW May 2025 · Vital Signs Partnership 2022 · SmartQHSE 2026 · Al Jazeera 2026</div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h3>📅 Gulf Major Incidents Timeline</h3><span class="ps">Verified events</span></div>
+      <div class="pb">
+        <div class="tl" id="tl-gulf"></div>
+      </div>
+      <div class="src">Sources: Wikipedia · Oil & Gas Middle East · Al Jazeera · HRW · UNDRR</div>
+    </div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Worker Safety Violations — Gulf Region</h2><div class="line"></div></div>
+  <div class="panel">
+    <div class="ph"><h3>👷 Common Safety Non-Compliances</h3><span class="ps">Oil Gas & Construction sector</span></div>
+    <div class="viol-grid">
+      <div class="viol" style="border-left:3px solid var(--red)"><div class="viol-icon">⛑</div><div class="viol-title" style="color:var(--red2)">No PPE / Language Barrier</div><div class="viol-desc">Many migrant workers unaware of safety rules due to language gaps. PPE not provided or not worn on-site.</div></div>
+      <div class="viol" style="border-left:3px solid var(--ora)"><div class="viol-icon">☀️</div><div class="viol-title" style="color:var(--ora2)">Working in Extreme Heat</div><div class="viol-desc">Midday ban ignored. Workers forced to continue in 45°C+. Heat stroke is a silent killer — often misclassified.</div></div>
+      <div class="viol" style="border-left:3px solid var(--yel)"><div class="viol-icon">📵</div><div class="viol-title" style="color:var(--yel2)">Deaths Not Reported</div><div class="viol-desc">HRW 2025: migrant deaths classified as "cardiac arrest" — no investigation, no compensation to families.</div></div>
+      <div class="viol" style="border-left:3px solid var(--red)"><div class="viol-icon">🏗</div><div class="viol-title" style="color:var(--red2)">Scaffolding Without Safety Nets</div><div class="viol-desc">Falls from heights = #1 cause of construction deaths. Cheap contractors skip fall arrest systems to cut costs.</div></div>
+      <div class="viol" style="border-left:3px solid var(--ora)"><div class="viol-icon">⚡</div><div class="viol-title" style="color:var(--ora2)">Live Electrical Hazards</div><div class="viol-desc">HRW: workers electrocuted on construction sites across Saudi Arabia. Proper lockout/tagout not implemented.</div></div>
+      <div class="viol" style="border-left:3px solid var(--yel)"><div class="viol-icon">🕐</div><div class="viol-title" style="color:var(--yel2)">Excessive Working Hours</div><div class="viol-desc">12–16 hour shifts common for migrant workers. Fatigue is a leading contributor to serious accidents.</div></div>
+    </div>
+    <div class="src">Sources: Human Rights Watch May 2025 · ILO GCC Report · WHO EMRO · Vital Signs Partnership 2022</div>
+  </div>
+</div>
+
+<!-- ══════════ AUSTRALIA PAGE ══════════ -->
+<div class="page" id="page-aus">
+
+  <div class="alert-strip" style="border-left-color:var(--grn)">
+    <div class="as-icon">🦘</div>
+    <div>
+      <div class="as-main" style="color:var(--grn2)">AUSTRALIA 2024 — 188 worker fatalities · Construction 23% of all deaths · Falls from heights +71% vs 2022 · NOPSEMA offshore regulations updated 2024</div>
+      <div class="as-sub">Sources: Safe Work Australia 2025 Report · NOPSEMA Regulations 2024 · Australian Dept of Industry</div>
+    </div>
+    <div class="as-badge" style="background:rgba(47,158,68,0.12);color:var(--grn2)">Improving Trend</div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi y"><div class="kpi-delta good">▼ −6%</div><div class="kpi-lbl">Fatalities 2024</div><div class="kpi-val y">188</div><div class="kpi-sub">Down from 200 in 2023</div></div>
+    <div class="kpi o"><div class="kpi-delta bad">▲ +5%</div><div class="kpi-lbl">Fatalities 2023</div><div class="kpi-val o">200</div><div class="kpi-sub">5-yr avg: 191/year</div></div>
+    <div class="kpi r"><div class="kpi-delta bad">▲ +71%</div><div class="kpi-lbl">Falls from Height (2023)</div><div class="kpi-val r">29</div><div class="kpi-sub">Up from 17 in 2022</div></div>
+    <div class="kpi b"><div class="kpi-delta bad">42%</div><div class="kpi-lbl">Vehicle Incidents</div><div class="kpi-val b">79</div><div class="kpi-sub">Largest cause (2024)</div></div>
+    <div class="kpi g"><div class="kpi-delta good">▼ −19%</div><div class="kpi-lbl">Fatality Rate (10 yr)</div><div class="kpi-val g">1.4</div><div class="kpi-sub">Per 100K workers</div></div>
+    <div class="kpi c"><div class="kpi-delta bad">▲ 23%</div><div class="kpi-lbl">Construction Share</div><div class="kpi-val c">45</div><div class="kpi-sub">Deaths in 2023</div></div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Australia Fatality Trends & Causes</h2><div class="line"></div></div>
+
+  <div class="g2">
+    <div class="panel">
+      <div class="ph"><h3>📉 Annual Worker Fatalities — Australia</h3><span class="ps">2019–2024 Safe Work Australia</span></div>
+      <div class="chart-wrap"><canvas id="chartAusFat"></canvas></div>
+      <div class="src">Source: Safe Work Australia Key WHS Statistics 2024 & 2025 Reports</div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h3>🔍 2023 Fatality Causes — Australia</h3><span class="ps">By mechanism %</span></div>
+      <div class="chart-wrap"><canvas id="chartAusCauses"></canvas></div>
+      <div class="src">Source: Safe Work Australia Key WHS Statistics Australia 2024</div>
+    </div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Australia Risk Zones & Compliance</h2><div class="line"></div></div>
+
+  <div class="g2">
+    <div class="panel">
+      <div class="ph"><h3>⚠ Australia HSE Risk Zones</h3><span class="ps">Oil Gas + Construction</span></div>
+      <div class="rz-list">
+        <div class="rz"><div class="rz-icon">🚛</div><div class="rz-info"><div class="rz-name">Vehicle & Transport Incidents</div><div class="rz-desc">42% of all fatalities. Trucks, machinery, quad bikes — single-vehicle 72% of cases</div></div><div class="rl cr">CRITICAL</div></div>
+        <div class="rz"><div class="rz-icon">🏗</div><div class="rz-info"><div class="rz-name">Falls from Heights</div><div class="rz-desc">Up 71% since 2022 (17→29 deaths). Construction sector worst affected. Scaffolding & roofing</div></div><div class="rl cr">CRITICAL</div></div>
+        <div class="rz"><div class="rz-icon">🧠</div><div class="rz-info"><div class="rz-name">Mental Health Claims Rising</div><div class="rz-desc">10.5% of all serious claims are mental health (2023). Median time lost 5× longer than physical injuries</div></div><div class="rl hi">HIGH</div></div>
+        <div class="rz"><div class="rz-icon">⚙️</div><div class="rz-info"><div class="rz-name">Machinery & Equipment</div><div class="rz-desc">Machinery operators highest fatality rate: 6.7 per 100K. 30%+ of all AU workplace fatalities</div></div><div class="rl hi">HIGH</div></div>
+        <div class="rz"><div class="rz-icon">🛢️</div><div class="rz-info"><div class="rz-name">Offshore Petroleum (NOPSEMA)</div><div class="rz-desc">New Safety Regs 2024 enacted. Well integrity, psychosocial incidents now mandatorily reported</div></div><div class="rl me">MEDIUM</div></div>
+        <div class="rz"><div class="rz-icon">🌡️</div><div class="rz-info"><div class="rz-name">Occupational Disease / Silica</div><div class="rz-desc">139,000 serious comp claims 2022-23. Silica dust in mining/construction causing silicosis epidemic</div></div><div class="rl me">MEDIUM</div></div>
+      </div>
+      <div class="src">Source: Safe Work Australia 2025 · NOPSEMA 2024 · Australian Dept of Industry</div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h3>🛡 Compliance Status — Australia</h3><span class="ps">Industry benchmarks 2024</span></div>
+      <div class="comp-grid">
+        <div class="comp-card">
+          <div class="comp-lbl">🦺 PPE Compliance</div>
+          <div class="comp-row">
+            <div class="ring-wrap"><svg width="52" height="52"><circle cx="26" cy="26" r="20" fill="none" stroke="#1c2130" stroke-width="5"/><circle cx="26" cy="26" r="20" fill="none" stroke="#51cf66" stroke-width="5" stroke-dasharray="125.7" stroke-dashoffset="25.1" stroke-linecap="round"/></svg><div class="ring-num" style="color:var(--grn2)">80%</div></div>
+            <div><div class="comp-stat" style="color:var(--grn2)">Good</div><div class="comp-note">Better than Gulf — WHS Act enforcement strong</div></div>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-lbl">📋 Incident Reporting</div>
+          <div class="comp-row">
+            <div class="ring-wrap"><svg width="52" height="52"><circle cx="26" cy="26" r="20" fill="none" stroke="#1c2130" stroke-width="5"/><circle cx="26" cy="26" r="20" fill="none" stroke="#4dabf7" stroke-width="5" stroke-dasharray="125.7" stroke-dashoffset="18.9" stroke-linecap="round"/></svg><div class="ring-num" style="color:var(--blu2)">85%</div></div>
+            <div><div class="comp-stat" style="color:var(--blu2)">Strong</div><div class="comp-note">Mandatory reporting to Safe Work Australia</div></div>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-lbl">🔧 Equipment Inspection</div>
+          <div class="comp-row">
+            <div class="ring-wrap"><svg width="52" height="52"><circle cx="26" cy="26" r="20" fill="none" stroke="#1c2130" stroke-width="5"/><circle cx="26" cy="26" r="20" fill="none" stroke="#51cf66" stroke-width="5" stroke-dasharray="125.7" stroke-dashoffset="25.1" stroke-linecap="round"/></svg><div class="ring-num" style="color:var(--grn2)">82%</div></div>
+            <div><div class="comp-stat" style="color:var(--grn2)">Good</div><div class="comp-note">NOPSEMA offshore inspections rigorous</div></div>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-lbl">🧠 Mental Health Programs</div>
+          <div class="comp-row">
+            <div class="ring-wrap"><svg width="52" height="52"><circle cx="26" cy="26" r="20" fill="none" stroke="#1c2130" stroke-width="5"/><circle cx="26" cy="26" r="20" fill="none" stroke="#ff922b" stroke-width="5" stroke-dasharray="125.7" stroke-dashoffset="50.3" stroke-linecap="round"/></svg><div class="ring-num" style="color:var(--ora2)">60%</div></div>
+            <div><div class="comp-stat" style="color:var(--ora2)">Needs Work</div><div class="comp-note">Mental health claims +10.5% — sector underprepared</div></div>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-lbl">🏗 Fall Protection</div>
+          <div class="comp-row">
+            <div class="ring-wrap"><svg width="52" height="52"><circle cx="26" cy="26" r="20" fill="none" stroke="#1c2130" stroke-width="5"/><circle cx="26" cy="26" r="20" fill="none" stroke="#ff6b6b" stroke-width="5" stroke-dasharray="125.7" stroke-dashoffset="50.3" stroke-linecap="round"/></svg><div class="ring-num" style="color:var(--red2)">60%</div></div>
+            <div><div class="comp-stat" style="color:var(--red2)">Poor</div><div class="comp-note">Falls up 71% — harness/net usage still low</div></div>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-lbl">🚛 Driver Safety</div>
+          <div class="comp-row">
+            <div class="ring-wrap"><svg width="52" height="52"><circle cx="26" cy="26" r="20" fill="none" stroke="#1c2130" stroke-width="5"/><circle cx="26" cy="26" r="20" fill="none" stroke="#fcc419" stroke-width="5" stroke-dasharray="125.7" stroke-dashoffset="37.7" stroke-linecap="round"/></svg><div class="ring-num" style="color:var(--yel2)">70%</div></div>
+            <div><div class="comp-stat" style="color:var(--yel2)">Partial</div><div class="comp-note">Vehicles cause 42% deaths — fatigue management weak</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="src">Source: Safe Work Australia 2025 · NOPSEMA · WHS Act 2011</div>
+    </div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Australia HSE Recommendations</h2><div class="line"></div></div>
+  <div class="panel">
+    <div class="ph"><h3>✅ Priority Actions for Management</h3><span class="ps">Based on Safe Work Australia 2024–2025 findings</span></div>
+    <div class="pb">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+        <div class="viol" style="border-left:3px solid var(--red)"><div class="viol-icon">🏗</div><div class="viol-title" style="color:var(--red2)">Fall Arrest Systems — Mandatory</div><div class="viol-desc">Falls up 71%. Every elevated worksite must have harnesses, safety nets, edge protection before work starts.</div></div>
+        <div class="viol" style="border-left:3px solid var(--ora)"><div class="viol-icon">🚛</div><div class="viol-title" style="color:var(--ora2)">Fatigue Management Programs</div><div class="viol-desc">42% of deaths involve vehicles. Implement digital fatigue monitoring, mandatory rest periods, telematics.</div></div>
+        <div class="viol" style="border-left:3px solid var(--yel)"><div class="viol-icon">🧠</div><div class="viol-title" style="color:var(--yel2)">Mental Health First Response</div><div class="viol-desc">10.5% of serious claims = mental health. EAP programs and on-site psychosocial risk assessments required.</div></div>
+        <div class="viol" style="border-left:3px solid var(--grn)"><div class="viol-icon">🛢️</div><div class="viol-title" style="color:var(--grn2)">NOPSEMA 2024 Compliance</div><div class="viol-desc">New regs require psychosocial incident reporting, stronger HSR roles. Operators must update safety cases now.</div></div>
+        <div class="viol" style="border-left:3px solid var(--cyn)"><div class="viol-icon">🌫️</div><div class="viol-title" style="color:var(--cyn2)">Silica Dust Control</div><div class="viol-desc">Engineered stone ban enforced 2024. Mining/construction must implement wet cutting and respiratory protection.</div></div>
+        <div class="viol" style="border-left:3px solid var(--blu)"><div class="viol-icon">📊</div><div class="viol-title" style="color:var(--blu2)">Real-Time Incident Reporting</div><div class="viol-desc">400+ serious claims per day. Deploy digital HSE systems — mobile reporting, instant NOPSEMA notifications.</div></div>
+      </div>
+    </div>
+    <div class="src">Sources: Safe Work Australia 2025 · NOPSEMA Regulations 2024 · Australian WHS Strategy 2023–2033</div>
+  </div>
+</div>
+
+<!-- ══════════ COMPARISON PAGE ══════════ -->
+<div class="page" id="page-compare">
+
+  <div class="alert-strip" style="border-left-color:var(--blu)">
+    <div class="as-icon">🌍</div>
+    <div>
+      <div class="as-main" style="color:var(--blu2)">REGIONAL COMPARISON — Gulf fatality rate 5× higher than Australia · Australia improving −19% over decade · Gulf regulatory gap remains critical</div>
+      <div class="as-sub">Sources: IOGP 2024 · Safe Work Australia 2025 · ILO · WHO EMRO · SmartQHSE 2026</div>
+    </div>
+    <div class="as-badge" style="background:rgba(25,113,194,0.15);color:var(--blu2)">Side-by-Side</div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Gulf vs Australia — Head to Head</h2><div class="line"></div></div>
+
+  <div class="g2">
+    <div class="panel">
+      <div class="ph"><h3>📊 Fatality Rate Comparison</h3><span class="ps">Per 100,000 workers</span></div>
+      <div class="chart-wrap"><canvas id="chartCompare"></canvas></div>
+      <div class="src">Sources: IOGP · Safe Work Australia · WHO EMRO · Tom Loney UAE University</div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h3>📋 Key Metrics Comparison</h3><span class="ps">Gulf Region vs Australia</span></div>
+      <div class="pb" style="padding:0">
+        <table class="cmp-table">
+          <thead><tr><th>Metric</th><th class="gulf-col">Gulf Region</th><th class="aus-col">Australia</th></tr></thead>
+          <tbody>
+            <tr><td>Fatality Rate (per 100K)</td><td class="gulf-col">~6.8</td><td class="aus-col">1.4</td></tr>
+            <tr><td>Main Fatality Cause</td><td class="gulf-col">Falls + Heat</td><td class="aus-col">Vehicle Incidents</td></tr>
+            <tr><td>Migrant Worker Risk</td><td class="gulf-col">14× higher rate</td><td class="aus-col">Comparable</td></tr>
+            <tr><td>Reporting Quality</td><td class="gulf-col">Underreported</td><td class="aus-col">Mandatory/Robust</td></tr>
+            <tr><td>Regulator</td><td class="gulf-col">OSHAD/GOSI/MOL</td><td class="aus-col">Safe Work AU + NOPSEMA</td></tr>
+            <tr><td>Offshore Regulation</td><td class="gulf-col">Improving (Vision 2030)</td><td class="aus-col">NOPSEMA 2024 Regs</td></tr>
+            <tr><td>Construction Deaths</td><td class="gulf-col">Critical — HRW 2025</td><td class="aus-col">45 deaths (23%)</td></tr>
+            <tr><td>Mental Health Tracking</td><td class="gulf-col">Not tracked</td><td class="aus-col">10.5% of claims</td></tr>
+            <tr><td>Heat Risk Management</td><td class="gulf-col">Midday ban — violated</td><td class="aus-col">Standard protocols</td></tr>
+            <tr><td>Overall Trend</td><td class="gulf-col">Improving slowly</td><td class="aus-col">−19% over decade</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="src">Sources: All cited above — compiled May 2025</div>
+    </div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Incident Causes — Side by Side</h2><div class="line"></div></div>
+  <div class="panel">
+    <div class="ph"><h3>📉 Cause Breakdown — Gulf vs Australia vs Global</h3><span class="ps">% of total fatalities</span></div>
+    <div class="chart-wrap" style="padding:18px"><canvas id="chartCompareCauses" style="max-height:280px"></canvas></div>
+    <div class="src">Sources: IOGP 2024 · Safe Work Australia 2024 · ILO · HRW 2025</div>
+  </div>
+
+  <div class="stitle"><div class="line"></div><h2>Top Recommendations — All Regions</h2><div class="line"></div></div>
+  <div class="panel">
+    <div class="ph"><h3>✅ Universal HSE Priorities — Management Action Plan</h3><span class="ps">Based on verified 2024–2025 reports</span></div>
+    <div class="pb">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
+        <div class="viol" style="border-left:3px solid var(--red)"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="viol-icon">01</div><span class="rl cr">CRITICAL</span></div><div class="viol-title" style="color:var(--red2)">Contractor Safety — Both Regions</div><div class="viol-desc">Gulf: 81% deaths are contractors. Australia: contractors under-supervised. Mandatory induction, PTW integration, visible leadership.</div></div>
+        <div class="viol" style="border-left:3px solid var(--red)"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="viol-icon">02</div><span class="rl cr">CRITICAL</span></div><div class="viol-title" style="color:var(--red2)">Fall Prevention — Harnesses & Nets</div><div class="viol-desc">Gulf #1 cause: falls from heights. Australia +71% in 2023. Every elevated worksite: edge protection mandatory before anyone climbs.</div></div>
+        <div class="viol" style="border-left:3px solid var(--ora)"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="viol-icon">03</div><span class="rl hi">HIGH</span></div><div class="viol-title" style="color:var(--ora2)">Vehicle & Transport Safety</div><div class="viol-desc">Australia: 42% of all deaths. Gulf: road fatalities among migrant workers rising. GPS monitoring, fatigue alerts, speed limiters mandatory.</div></div>
+        <div class="viol" style="border-left:3px solid var(--ora)"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="viol-icon">04</div><span class="rl hi">HIGH</span></div><div class="viol-title" style="color:var(--ora2)">Near-Miss Reporting Culture</div><div class="viol-desc">Both regions: under-reporting is a leading predictor of major accidents. Anonymous blameless system must be deployed immediately.</div></div>
+        <div class="viol" style="border-left:3px solid var(--yel)"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="viol-icon">05</div><span class="rl me">MEDIUM</span></div><div class="viol-title" style="color:var(--yel2)">Digital HSE Systems</div><div class="viol-desc">Real-time IoT monitoring, digital PTW, mobile incident reporting. Digital twins projected at 50% adoption by 2026 in oil & gas.</div></div>
+        <div class="viol" style="border-left:3px solid var(--grn)"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div class="viol-icon">06</div><span class="rl me">MEDIUM</span></div><div class="viol-title" style="color:var(--grn2)">Mental Health & Wellbeing</div><div class="viol-desc">Australia: 10.5% of serious claims. Gulf: not tracked. Psychosocial risk assessments, EAP programs, NOPSEMA mandated reporting 2024.</div></div>
+      </div>
+    </div>
+    <div class="src">Sources: IOGP 2024 · Safe Work Australia 2025 · HRW 2025 · NOPSEMA 2024 · SmartQHSE 2026 · ILO</div>
+  </div>
+</div>
+
+<div class="footer">
+  HSE Global Intelligence Dashboard &nbsp;·&nbsp; Data: IOGP · Safe Work Australia · ILO · HRW · NOPSEMA · WHO EMRO · SmartQHSE &nbsp;·&nbsp; Compiled May 2025
+</div>
+
+<script>
+// CLOCK
+setInterval(()=>{ document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour12:false})+' PKT'; },1000);
+
+// TAB SWITCH
+function switchTab(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+// CHART DEFAULTS
+Chart.defaults.color='#52596e';
+Chart.defaults.borderColor='rgba(255,255,255,0.06)';
+Chart.defaults.font.family='Outfit';
+Chart.defaults.font.size=11;
+
+const cfg={responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1c2130',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,padding:10,cornerRadius:8}}};
+
+// 1. GLOBAL FATALITIES
+new Chart(document.getElementById('chartGlobalFat'),{
+  type:'bar',
+  data:{
+    labels:['2019','2020','2021','2022','2023','2024'],
+    datasets:[{
+      data:[25,14,20,33,27,32],
+      backgroundColor:['#ff922b','#51cf66','#ff922b','#ff6b6b','#ff922b','#ff6b6b'],
+      borderRadius:5,borderSkipped:false
+    }]
+  },
+  options:{...cfg,plugins:{...cfg.plugins,legend:{display:false}},scales:{
+    x:{grid:{display:false},ticks:{color:'#52596e'}},
+    y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#52596e'},beginAtZero:true}
+  }}
+});
+
+// 2. GLOBAL CAUSES PIE
+new Chart(document.getElementById('chartCauses'),{
+  type:'doughnut',
+  data:{
+    labels:['Fire/Explosion 41%','Drilling/Well 34%','Production 22%','Transport 12%','Lifting 6%','Maintenance 9%'],
+    datasets:[{
+      data:[41,34,22,12,6,9],
+      backgroundColor:['#f03e3e','#f76707','#f59f00','#1971c2','#0c8599','#2f9e44'],
+      borderWidth:0,hoverOffset:6
+    }]
+  },
+  options:{...cfg,plugins:{legend:{display:true,position:'right',labels:{boxWidth:10,padding:10,color:'#52596e',font:{size:10}}}}}
+});
+
+// 3. GULF COUNTRY CHART
+new Chart(document.getElementById('chartGulfCountry'),{
+  type:'bar',
+  data:{
+    labels:['Bahrain','Saudi Arabia','UAE','Kuwait','Qatar','Australia\n(ref)','UK (ref)'],
+    datasets:[{
+      label:'Deaths per 100K workers',
+      data:[7.5,6.9,6.8,5.8,5.2,1.4,0.61],
+      backgroundColor:['#f03e3e','#f03e3e','#f76707','#f59f00','#f59f00','#51cf66','#4dabf7'],
+      borderRadius:5,borderSkipped:false
+    }]
+  },
+  options:{...cfg,plugins:{legend:{display:false}},scales:{
+    x:{grid:{display:false},ticks:{color:'#52596e',maxRotation:45}},
+    y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#52596e'},beginAtZero:true,title:{display:true,text:'Per 100K workers',color:'#52596e'}}
+  }}
+});
+
+// 4. GULF CAUSES
+new Chart(document.getElementById('chartGulfCauses'),{
+  type:'doughnut',
+  data:{
+    labels:['Falls from Height','Heat Stroke','Vehicle Accidents','Electrocution','Machinery','Fire/Explosion'],
+    datasets:[{
+      data:[35,20,18,12,10,5],
+      backgroundColor:['#f03e3e','#f59f00','#1971c2','#f76707','#2f9e44','#c92a2a'],
+      borderWidth:0,hoverOffset:6
+    }]
+  },
+  options:{...cfg,plugins:{legend:{display:true,position:'right',labels:{boxWidth:10,padding:8,color:'#52596e',font:{size:10}}}}}
+});
+
+// 5. AUSTRALIA FATALITIES
+new Chart(document.getElementById('chartAusFat'),{
+  type:'line',
+  data:{
+    labels:['2019','2020','2021','2022','2023','2024'],
+    datasets:[{
+      label:'Total Fatalities',
+      data:[182,169,172,195,200,188],
+      borderColor:'#51cf66',backgroundColor:'rgba(47,158,68,0.1)',
+      tension:0.3,fill:true,pointBackgroundColor:'#51cf66',pointRadius:5,pointHoverRadius:7
+    },{
+      label:'Construction',
+      data:[30,24,27,27,45,38],
+      borderColor:'#f76707',backgroundColor:'rgba(247,103,7,0.08)',
+      tension:0.3,fill:true,pointBackgroundColor:'#f76707',pointRadius:5,borderDash:[4,3]
+    }]
+  },
+  options:{...cfg,plugins:{legend:{display:true,labels:{boxWidth:10,color:'#52596e',font:{size:10}}}},scales:{
+    x:{grid:{display:false},ticks:{color:'#52596e'}},
+    y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#52596e'},beginAtZero:false}
+  }}
+});
+
+// 6. AUSTRALIA CAUSES
+new Chart(document.getElementById('chartAusCauses'),{
+  type:'doughnut',
+  data:{
+    labels:['Vehicle Incidents 42%','Being Hit by Object 12%','Falls from Height 15%','Machinery 14%','Other 17%'],
+    datasets:[{
+      data:[42,12,15,14,17],
+      backgroundColor:['#1971c2','#f59f00','#f03e3e','#f76707','#52596e'],
+      borderWidth:0,hoverOffset:6
+    }]
+  },
+  options:{...cfg,plugins:{legend:{display:true,position:'right',labels:{boxWidth:10,padding:8,color:'#52596e',font:{size:10}}}}}
+});
+
+// 7. COMPARISON BAR
+new Chart(document.getElementById('chartCompare'),{
+  type:'bar',
+  data:{
+    labels:['Gulf (avg)','Saudi Arabia','UAE','Bahrain','Qatar','Australia','UK (IOGP)','Global avg'],
+    datasets:[{
+      label:'Fatality rate per 100K',
+      data:[6.5,6.9,6.8,7.5,5.2,1.4,0.61,1.8],
+      backgroundColor:['#f59f00','#f03e3e','#f76707','#c92a2a','#f59f00','#51cf66','#4dabf7','#7950f2'],
+      borderRadius:5,borderSkipped:false
+    }]
+  },
+  options:{...cfg,plugins:{legend:{display:false}},scales:{
+    x:{grid:{display:false},ticks:{color:'#52596e',maxRotation:40}},
+    y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#52596e'},beginAtZero:true}
+  }}
+});
+
+// 8. COMPARE CAUSES GROUPED
+new Chart(document.getElementById('chartCompareCauses'),{
+  type:'bar',
+  data:{
+    labels:['Falls from Height','Vehicle/Transport','Fire/Explosion','Heat/Fumes','Machinery','Other'],
+    datasets:[
+      {label:'Gulf Region',data:[35,18,5,20,12,10],backgroundColor:'rgba(245,159,0,0.75)',borderRadius:4},
+      {label:'Australia',data:[15,42,3,2,14,24],backgroundColor:'rgba(47,158,68,0.75)',borderRadius:4},
+      {label:'Global (IOGP)',data:[8,12,41,5,10,24],backgroundColor:'rgba(25,113,194,0.75)',borderRadius:4},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:true,
+    plugins:{legend:{display:true,labels:{boxWidth:10,color:'#52596e',font:{size:11}}},tooltip:{backgroundColor:'#1c2130',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,padding:10,cornerRadius:8}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#52596e'}},
+      y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#52596e'},beginAtZero:true,title:{display:true,text:'% of fatalities',color:'#52596e'}}
+    }
+  }
+});
+
+// RISK MATRIX
+const rmData=[
+  ['vl','vl','lo','lo','me'],
+  ['vl','lo','lo','me','hi'],
+  ['lo','lo','me','hi','cr'],
+  ['lo','me','hi','cr','cr'],
+  ['me','hi','cr','cr','cr'],
+];
+const rmLabels=[
+  ['Rare/Minor','Rare/Mod','Rare/Maj','Rare/Sev','Rare/Cat'],
+  ['Unlik/Minor','Unlik/Mod','Unlik/Maj','Unlik/Sev','Unlik/Cat'],
+  ['Poss/Minor','Poss/Mod','Poss/Maj','Poss/Sev','Poss/Cat'],
+  ['Like/Minor','Like/Mod','Like/Maj','Like/Sev','Like/Cat'],
+  ['AlmCer/Min','AlmCer/Mod','AlmCer/Maj','AlmCer/Sev','AlmCer/Cat'],
+];
+const rmGrid=document.getElementById('rmGrid');
+for(let r=4;r>=0;r--){
+  for(let c=0;c<5;c++){
+    const cell=document.createElement('div');
+    cell.className='rm-cell '+rmData[r][c];
+    cell.title=rmLabels[r][c];
+    rmGrid.appendChild(cell);
+  }
+}
+
+// GLOBAL TIMELINE
+const tlGlobal=[
+  {year:'1977',name:'Ekofisk Bravo Blowout',loc:'North Sea, Norway',dot:'#f59f00',desc:'First major North Sea oil blowout — human error caused safety valve failure. No fatalities but 80K–126K barrels spilled. Led to stricter blowout prevention standards globally.',tags:['Human Error','Blowout','No Fatalities']},
+  {year:'1988',name:'Piper Alpha — 167 Killed',loc:'North Sea, Scotland',dot:'#f03e3e',desc:'Deadliest offshore disaster ever. Missing PTW information between shifts → gas condensate leak → chain explosions destroyed platform. Only 59 of 226 survived. Led to complete overhaul of offshore safety regulation.',tags:['PTW Failure','167 Deaths','Shift Handover','Gas Leak']},
+  {year:'2005',name:'BP Texas City Refinery',loc:'Texas, USA',dot:'#f03e3e',desc:'15 workers killed — hydrocarbon vapor cloud ignited. Root cause: over-pressurized equipment + decades of deferred safety investment. Culture of cost over safety.',tags:['15 Deaths','Overpressure','Culture Failure']},
+  {year:'2010',name:'Deepwater Horizon',loc:'Gulf of Mexico, USA',dot:'#f03e3e',desc:'11 killed. Largest accidental oil spill in history — 134 million gallons over 87 days. Faulty BOP + schedule pressure (weeks behind) + ignored negative pressure test = catastrophe.',tags:['11 Deaths','134M Gallon Spill','BOP Failure','Schedule Pressure']},
+  {year:'2022',name:'Peak Year — 33 Fatalities',loc:'Global (IOGP Members)',dot:'#f76707',desc:'Highest recent count. Post-COVID workforce restart created competency gaps. Contractor fatalities outnumbered employee fatalities. Less experienced workers returning to high-risk operations.',tags:['Post-COVID','Competency Gap','Contractor Risk']},
+  {year:'2024',name:'32 Deaths — Lowest FAR Ever',loc:'Global (IOGP)',dot:'#fcc419',desc:'32 deaths in 21 incidents. 26 contractors vs 6 employees. Drilling = 11 deaths. Fire/explosion = 13 deaths. FAR 0.77 — lowest in industry history. 90% improvement since 1985.',tags:['FAR 0.77','90% Improvement','Still 32 Deaths']},
+];
+renderTimeline('tl-global',tlGlobal);
+
+// GULF TIMELINE
+const tlGulf=[
+  {year:'2019',name:'Abqaiq-Khurais Drone Attack',loc:'Eastern Saudi Arabia',dot:'#f59f00',desc:'Houthi drone and cruise missile attack on Saudi Aramco\'s Abqaiq oil processing plant — world\'s largest. 5% of global oil supply disrupted temporarily. New HSE threat: security/drone attacks on energy infrastructure.',tags:['Drone Strike','Aramco','Supply Disruption']},
+  {year:'2022',name:'Abu Dhabi Fuel Terminal Attack',loc:'Abu Dhabi, UAE',dot:'#f03e3e',desc:'Houthis struck Mussafah Fuel Terminal — 3 killed. Same week: Jeddah Aramco depot fire. New category of HSE risk in Gulf: violent acts and drone warfare targeting oil infrastructure.',tags:['3 Deaths','Drone','UAE','Aramco Jeddah']},
+  {year:'2025',name:'HRW Migrant Worker Report',loc:'Saudi Arabia',dot:'#f76707',desc:'Human Rights Watch documented scores of migrant worker deaths — electrocution, falls, decapitation on construction sites. Many classified "natural causes," not investigated, families not compensated.',tags:['Migrant Workers','HRW Report','Under-Reported','Construction']},
+  {year:'2026',name:'Ras Tanura & Ras Laffan Attacks',loc:'Saudi Arabia & Qatar',dot:'#f03e3e',desc:'Iranian strikes hit Aramco\'s Ras Tanura refinery (550K bbl/day). Qatar LNG facilities hit — 17% of LNG export capacity lost, $20 billion estimated revenue loss. CRITICAL new HSE dimension.',tags:['$20B Loss','LNG Disruption','Iran Strikes','New HSE Category']},
+];
+renderTimeline('tl-gulf',tlGulf);
+
+function renderTimeline(id,data){
+  const el=document.getElementById(id);
+  data.forEach(t=>{
+    el.innerHTML+=`<div class="tl-item">
+      <div class="tl-yr">${t.year}</div>
+      <div class="tl-spine">
+        <div class="tl-dot" style="background:${t.dot};box-shadow:0 0 6px ${t.dot}66"></div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-name" style="color:${t.dot}">${t.name}</div>
+        <div class="tl-loc">📍 ${t.loc}</div>
+        <div class="tl-desc">${t.desc}</div>
+        <div class="tl-tags">${t.tags.map(tag=>`<span class="tl-tag">${tag}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  });
+}
+</script>
+</body>
+</html>
